@@ -10,7 +10,10 @@ license = "Same as Nmap -- See https://nmap.org/book/man-legal.html"
 categories = {"discovery", "safe"}
 
 function portrule(host, port)
-  port.protocol == "udp"
+  if port.protocol == "udp"
+  then
+    return true
+  end
 end
 
 function action(host, port)
@@ -21,10 +24,10 @@ function action(host, port)
   if not status then
     return
   end
-  
+
   if (#recv) == 12 then
     local bytes = string.byte(recv,12,15)
-    if (bytes == [6,4])
+    if (bytes == "0x00")
     then
       nmap.set_port_state(host, port, "open")
       port.version.name = "phillips-dep"
