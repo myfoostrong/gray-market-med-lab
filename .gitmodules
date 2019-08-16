@@ -1,0 +1,4 @@
+[submodule "philips-mp50/frankeinstein"]
+	path = philips-mp50/frankeinstein
+	url = https://charliewhiskey@gitlab.com/lodestone-security/frankeinstein.git
+
