@@ -1,0 +1,162 @@
+﻿Related Links
+https://defcon.org/html/defcon-27/dc-27-cfp.html
+https://defcon.org/html/defcon-27/dc-27-cfp-form.html
+https://writingprocess.mit.edu/process/step-2-plan-and-organize/creating-detailed-outline
+
+
+Outline
+1. Introduction
+   1. Managing medical device security has been a problem with difficult solutions for some time.
+      1. Medical device vulnerabilities still generate big news. [1]
+      2. Healthcare is an industry rife with security issues, regulations, and historically poorly funded security programs. [3]
+      3. Saving people is considered a good thing… [2]
+   1. Thesis: We understand that medical device security is an issue to solve. How do we hack our way out of this problem?
+We first need to better understand the environment that causes it. So we've started building ourselves a medical device testing lab, and are presenting our findings so far.
+
+
+1. Background Research
+   1. Security researchers have discovered severe vulnerabilities before [4],[5]
+   2. Healthcare is presented with a very hard problem of securing these vulnerable devices
+      1. Healthcare historically attributes little resources to IT, Network security being a fraction of that
+         1. This leads to a dearth in capable IT staff as well as not operating with updated technologies.
+      1. Medical devices are chosen by physicians, sometimes leaving IT out of the discovery, purchase, and on-boarding processes until network access is needed.
+      2. Similar problems with critical embedded devices have proposed solutions, but the implementation is hard [6]
+      3. Vendors claim their devices secure, hiding behind their “FDA Approved” status
+   1. Lodestone formed research partnerships with healthcare orgs to identify real-world, achievable solutions that work.
+      1. Data was collected by conducting interviews, volunteered by partners, or through experience from on-site engagements with permitting clients. [7]
+      2. Solutions range from network segmentation, threat detection, all the way through to  actually disassembling the devices themselves to manually install basic Windows updates. [8]
+   1. PROBLEM: Hospitals buy medical device to service their patients. Not all of them have spares lying around not being used. Who wants to let a bunch of hackers hammer away on their livelihood?
+   2. So we had to find some vulnerably medical devices of our own...
+1. Acquiring Medical Devices
+   1. FDA Regulations
+      1. "Under the provision of Section 520(e) of the Amendments, the FDA is authorized to restrict the sale, distribution, or use of a device if there cannot otherwise be reasonable assurance of its safety and effectiveness. A restricted device can only be sold on oral or written authorization by a licensed practitioner or under conditions specified by regulation." [9]
+   1. Group Purchasing Organizations
+      1. Many healthcare organization use GPO’s to save cost on supplies. These orgs organize bulk prices for their customers on products like surgery gloves, scrubs, and yes medical devices.
+      2. These organizations care about how many orders you’re going to make this year, and the next many years. Not many of them were willing to talk to us about this, and none were willing to help us source medical devices, even those we are in business deals with for sourcing infosec work.
+   1. Vendor Relationships
+      1. Vendors, as well as licensed third-parties often will also handle the sale and maintenance of the products.
+      2. These companies are trying to sell their newest products, to the biggest healthcare orgs. Enough background checks, and they start asking fishy questions like “Why do you want to test our devices?”
+   1. Ebay
+      1. So we turned to where everyone has gone since Al Gore invented the internet, Ebay!
+      2. Ebay has a number of users selling different types of medical equipment. The products are advertised in Ebay fashion with bright color, large text, and fancy photos. If you look hard enough, you see that they do request you be an FDA authorized purchaser. [10]
+      3. That being said, we still have yet to have any information requested during purchase, outside of payment and shipping info.
+
+
+1. Hospira Plum A+ IV Pump
+   1. Why did we pick this device?
+      1. Hospira, now Pfizer Injectables, is a manufacturer of popular, cheap IV pumps, found all over clinics, and ebay.
+      2. The pumps have been in the news before for security vulnerabilities[11]
+   1. Plum A+ Initial Findings [12]
+      1. Online forums revealing “cheat codes” for enabling “Biomed modes” on device
+         1. Switching batteries, time setting, System Defaults reset
+      1. DHCP address resolution, no traffic on network. Device is connected even when “powered down”.
+      2. two different ports open with web services listening, 80, and 8443 (SSL)
+         1. 80 responds only with 404
+         2. 8443 requests basic authentication credentials request.
+            1. Shuts down NIC after three incorrect auth’s in ~60 seconds, for ~120 seconds
+         1. Key is supposedly static to firmware, and non-updateable[11]
+         2. Reports to be a TinyHTTPD Server, and running thttpd-2.25, a version dated 2003, 16 years old!
+
+
+1. Philips Intellivue MP50 Patient Monitor
+   1. Why did we pick this device?
+      1. Philips makes a wide variety of consumer, medical, industrial devices, and more. They show their dedication to security by maintaining a list of security researchers in their “Hall of Honors” [13]
+      2. Philips recently publicized vulnerabilities identified in the family of monitors they produce [14]
+   1. MP50 Initial Findings [15]
+      1. User and maintenance manuals reveal modes enabled with static numeric key codes: Test, Debug, and Service
+      2. Requires static IP to be set in Service mode, the device audibly alerts when on an “empty subnet”, and no open TCP ports respond to scans.
+      3. Regular UDP broadcast from port 24005, containing recognizable ASCII values like model, firmware versions, etc.
+1. Data Export Programming Guide
+   1. Finding the Guide
+      1. Searching for a program to speak “philips mp50 patient monitor on udp 24005”, I came upon the Philips Data Export Programming Guide [16]
+      2. Instead of finding some program to eavesdrop on, and bastardize the replayed traffic, I found a “Rosetta Stone” analog.
+   1. Protocol Analysis
+      1. The device sends a regular broadcast, which instructs clients which port to interact with.
+      2. The client sends an Association Request, the monitor sends an Association Response, then sends an MDS Request, expecting a response from the client to determine the session configuration.
+      3. The client is then expected to request data from the monitor at regular intervals
+      4. An unused session times out after a period of time.
+      5. The monitor can send over a variety of data: Numerical Data( Heart rate, etc.), Waveform (EKG, etc.), System Alerts, and even Patient Demographic data like Name, DOB, height, weight, etc.
+      6. Already we prove CVE-2018-10597, Improper Authentication, as no authentication is required by the protocol, outside of an exchange of correctly formatted packets in correct order[17].
+   1. Hacking a Client Together
+      1. First couple attempts to copy-paste resulted in errors, so built a script to parse error data
+      2. The errors didn’t tell me what I needed to fix, so then I parsed the broadcast message.
+      3. Little by little, realized I had to mash all my parts together, and built a rough python client
+      4. Shoves raw bytes down a socket, and only handles the desired responses. [18]
+      5. Once you send the right packets, it sends you patient data! [19]
+      6. Additionally, the manual states only a computer on the devices subnet will be able to access the DEP interface. Further testing proved the interface accessible, although the computer no longer receives the broadcast
+   1. Einstein Project
+      1. When I circled back to document my findings for my DEFCON submission, I had my ego balloon burst when I stumbled upon the Github repo for a project called Einstein, a Python2.7 client which “...provides a communication interface for Philips IntelliVue Patient Monitors.” [20]
+      2. Project is based on the DEP Programming Guide, and built using the Scapy library, which is designed for building and dissecting network protocols.
+      3. The client listens for the broadcast, automatically associates, and then begins polling for numerical data. Any “observed” data is then sent to a specified web server.
+      4. The project did not have the ability to request or parse Patient Demographic data, so I added it and submitted a Pull Request. [21]
+   1. Somno, Open Health Care, and the UK National Health Service
+      1. So turns out the organization responsible for Einstein, Somno, was another medical device organization, spun off of a pitch at the NHS London Hack Day in 2016 [22]
+      2. The project seems intended to integrate into another open source project called Opal, which claims to be a “Full Stack Web Framework For Building Health Care Applications". The project is run by Open Health Care, the organization who operates NHS Hack Day. [23]
+      3. All of these organizations claim to be revolutionizing healthcare. This is a wonderful goal, but following tradition, there is very little mention of security anywhere.
+1. Presentation Project: Frankeinstein
+   1. Philips Data Export Protocol Nmap Script [24]
+      1. This script is designed to fingerprint any open UDP port listening with the Data Export Protocol service. It uses a malformed packet, expecting a “Refuse” message from the service.
+   1. Patient Monitor Server [25]
+      1. This server is based on the Einstein project referenced earlier.
+      2. Targets are force loaded into the database from parsed nmap scripts
+      3. Script starts to associate with monitors immediately, and poll for patient data
+   1. Data collection server [26]
+      1. This is a simple Python SimpleHTTP server included with the project, which either saves the data to a SQL-Lite3 DB, or prints to STD_OUT.
+
+
+1. Follow-Ups, Work in Progress
+   1. On Going Research
+      1. At the time of writing, 2019/03/04, progress is still on-going with all mentioned efforts, as well as new additions
+   1. Hospira Plum A+
+      1. We have begun physically disassembling the device. We will document any progress and findings.
+      2. We hope to practice some embedded security testing, and extract the embedded OS from the device, in hopes of recovering the static key.
+   1. Philips MP50/DEP
+      1. We have not re-created the other two reported CVE’s
+      2. Plans are in place to further modify the Frankeinstein client to begin testing for buffer overflow issues, as well as arbitrary memory reading.
+   1. Future Device Acquisitions
+      1. There’s a list of devices that are on the horizon for our lab
+      2. St. Jude Implantable Products + Merlin@Home [27]
+         1. Monitor which interfaces with the implanted devices. Previously reported as vulnerable.
+         2. Just received monitor beginning of April.
+         3. Plans in place to analyze device, and potentially record the signals with an SDR.
+      1. Medtronic Implanted Cardiac Devices
+         1. We've purchased a Carelink monitor, which interfaces with the implanted devices.
+         2. These devices were recently publicized for security vulnerabilities, including ones to drain the battery life of the ICD.
+      1. GE Logiq Ultrasound
+         1. Research partner reports certain models still running Windows 2000, or  embedded XP.
+         2. Outside of proving use of a vulnerable OS, the installed software will also be analyzed.
+         3. Devices are big, bulky, and expensive. Might be able to purchase the separate embedded computer.
+
+
+Sources
+
+
+
+
+1. CNN Medical Device Article: https://www.cnn.com/2018/11/01/health/fda-unprepared-medical-device-hacking/index.html
+2. Helping Others: http://mentalfloss.com/article/71964/7-scientific-benefits-helping-others
+3. Medical Industry Security Spending: https://www.csoonline.com/article/3252343/why-healthcare-cybersecurity-spending-will-exceed-65b-over-the-next-5-years.html
+4. Researcher Findings #1: https://www.wired.com/story/pacemaker-hack-malware-black-hat/
+5. Researcher Findings #2: https://ics-cert.us-cert.gov/advisories/ICSMA-18-037-02
+6. Securing ICS Networks:  https://www.sans.org/reading-room/whitepapers/ICS/paper/36327
+7. Client/Partner Data Collection - WIP, Not yet published
+8. Client Implementations - WIP, Not yet published
+9. FDA Section 520(e) of the Amendments - https://www.fda.gov/MedicalDevices/ProductsandMedicalProcedures/HomeHealthandConsumer/HomeUseDevices/ucm204869.htm
+10. FDA and Ebay - https://www.ebay.com.au/help/policies/prohibited-restricted-items/medicine-medical-devices-healthcare-products-policy?id=4322#section2
+11. DHS Advisory - Hospira LifeCare PCA Infusion System Vulnerabilities - https://ics-cert.us-cert.gov/advisories/ICSA-15-125-01B
+12. Plum A+ Findings -
+13. Philips Hall of Honors - https://www.philips.com/a-w/security/coordinated-vulnerability-disclosure/hall-of-honors.html
+14. DHS Advisory - Philips' IntelliVue Patient and Avalon Fetal Monitors -  https://ics-cert.us-cert.gov/advisories/ICSMA-18-156-01
+15. MP50 Initial Findings - https://gitlab.com/lodestone-security/gray-market-lab-preso/tree/master/philips-mp50/network-cap
+16. Philips Data Export Programming Guide - http://incenter.medical.philips.com/doclib/enc/fetch/applibid1.DAD/2000/4504/577242/577243/577247/582636/582882/X2%2c_MP%2c_MX_%26_FM_Series_Rel._L.0_Data_Export_Interface_Program._Guide_4535_645_88011_(ENG).pdf%3fnodeid%3d11407611%26vernum%3d-2
+17. CVE-2018-10597 - https://nvd.nist.gov/vuln/detail/CVE-2018-10597
+18. MP50 DEP Client - https://gitlab.com/lodestone-security/gray-market-lab-preso/tree/master/philips-mp50/dep-client-hack
+19. MP50 Patient Data - https://gitlab.com/lodestone-security/gray-market-lab-preso/blob/master/philips-mp50/patient.data.txt
+20. Einstein Github Repo - https://github.com/somno/einstein
+21. Einstein Pull Request -
+22. Somno Website - https://somno.github.io/Hello-World/
+23. Opal Website - https://opal.openhealthcare.org.uk/
+24. DEP Nmap Script - https://gitlab.com/lodestone-security/gray-market-lab-preso/blob/master/philips-mp50/philips-dep-discover.nse
+25. Frankeinstein Server - https://gitlab.com/lodestone-security/frankeinstein
+26. Data Collection Server - https://gitlab.com/lodestone-security/frankeinstein
+27. FDA Notice on St Jude Devices - https://www.fda.gov/MedicalDevices/Safety/AlertsandNotices/ucm535843.htm
