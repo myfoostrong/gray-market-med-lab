@@ -1,131 +1,189 @@
-PRESENTER INFORMATION
+﻿PRESENTER INFORMATION
 Primary Speaker Name or Pseudonym*:
 
-trik (Conor Walsh)
+
+blackfoot (Conor Walsh)
+
 
 Primary Speaker Title and Company (if applicable):
+
 
 Chief Scientist, Lodestone Security LLC
 
 
+
+
 Have any of the speakers spoken at a previous DEF CON? If Yes, which speaker, what year(s), and which talk(s)?
 
+
 No
+
 
 Primary Speaker Email Address:
 
+
 conor@lodestonesecurity.com
+
 
 Backup Email, in case of communication failure (optional):
 
+
 dr.conor.walsh@gmail.com
+
 
 Primary Speaker Phone Number:
 
+
 203 900 4304
+
 
 Speakers' Social Media / Personal Site Information (Twitter, Facebook, website, etc)*:
 
-twitter.com/dr_trik
+
+twitter.com/dr_trik (not used, not worth listing)
+
 
 Would you like your submission sent in anonymously to the review board?*: Yes or No
 
+
 No
+
 
 PRESENTATION INFORMATION
 Date of Submission:
 
-2/19/2019
+
+3/9/2020
+
 
 Presentation Title:
 
-Building a Gray Market Medical Lab
+
+The Gorilla in the Gray Market Medical Lab (work in progress…)
+
 
 Length of presentation: (20 minutes, 45 minutes, 105 minutes)
 
+
 45 minutes
+
 
 Is there a demonstration? Yes or No. If yes, please explain the demonstration.
 
-Yes. I will run a network connected patient monitor, and pull the patient data with a computer on the same network.
+
+I could bring some of the devices in the talk on-site, and demo some of the scripts
+
 
 Is there audience participation*? Yes or No. If yes, how?
 
-Yes. Can ask audience to input patient data (Name, Age, Weight, etc.)
+
+I could ask the audience to generate patient data (Name, Age, Weight, etc.)
+
 
 Are you releasing a new tool? Yes or No
 
+
 Yes
+
 
 If you are releasing a new tool:
 Under which license?
 
+
 GPL
+
 
 Is it a full tool suite, a plugin, proof of concept exploit, update to existing tool, or something else?
 
-nmap plugin
-Einstein project plugin
-Frankeinstein "PoC"
+
+nmap plugin, Nessus plugin
+Frank-Einstein Data Grabber
+
 
 Is the tool currently public?
 
+
 No (at time of writing, plans to release)
+
 
 What language is the tool written in?
 
+
 Lua (nmap script)
+NASL (Nessus Scripting Language)
 python27
+
 
 Please introduce your tool briefly and explain what it does:
 
-nmap script detects devices running the Phillips Data Export Protocol detailed in the linked manual.
 
-Einstein plugin adds the ability for the server to request and parse "Patient Demographic Data".
+nmap & NSE scripts to detect devices running the following:
+* Phillips Data Export Protocol 
+* Hospira Plum Web Server
 
-Frankeinstein proof of concept takes a modified Einstein client, force loads devices identified by the aforementioned nmap script, and proceeds to associate with them, and pull patient data. Normal behavior
+
+Frank-Einstein is a modified fork of the Einstein application, an open-source python27 scapy client built to interact with the Philips DEP Service. The modified client associates with client monitors either through the standard broadcast on local subnet, or loaded in manually from nmap or OpenVAS scans, and queries them for patient data.
+
 
 Are you releasing a new exploit? Yes or No
 
-Yes
+
+No
+
 
 If you are releasing vulnerabilities, please break them down and abstract as a vulnerability database would. Include the vendor(s), product(s), and version(s) affected here:
 
-None identified here, Takes advantage of CVE-2018-10597
+
+None identified here, scripts take advantage of CVE-2018-10597
+
 
 Are there any contingencies that might prevent releasing the exploit (e.g. vendor relationships, coordinated disclosure delays, visa approvals, etc)? Yes or No
 
-No
-
-Have you submitted or do you plan on submitting this topic to any other conference held prior to DEF CON 27? If yes, please list which conference(s) and their dates.
 
 No
+
+
+Have you submitted or do you plan on submitting this topic to any other conference held prior to DEF CON 28? If yes, please list which conference(s) and their dates.
+
+
+No
+
 
 Are you submitting this or any other topic to Black Hat USA? Yes or No. If Yes, please elaborate.
 
+
 No
+
 
 Are you submitting this or any other topic to BSidesLV? Yes or No. If Yes, please elaborate.
 
-Yes
+
+No
+
 
 If your DEF CON submission is not accepted for our main tracks, do you consent to allow DEF CON to forward your completed submission to the relevant official DEF CON Villages for their consideration for village content?* Yes or No.
 
+
 Yes
+
 
 ABSTRACT (not to exceed 1337 characters):
 
-Medical devices are sensistive, and securing them is a problem that has been slow to fix. So how do we hack our way out of the problem? We build a medical lab network of our own!
 
-During this talk we will walk through the process of building a lab of network connected medical devices, with an emphasis with known vulnerable devices; research, acquisition, setup, discovery, analysis, and even some live exploits!
+Medical devices are a high risk area of the network, and securing them is a problem that has been slow to fix. So how do we hack our way out of this problem? Need to figure out what the issues are first, but how do we do this without disrupting healthcare providers? We build a medical lab network of our own!
 
-Through this process we can walk away with a better understanding of the current issues plaguing the medical industry, the issues at stake, but also hopefully how we can first detect, and then protect these sensitive devices.
+
+During this talk we will walk through the process of building a lab of network connected medical devices, with an emphasis on known vulnerable devices; research, acquisition, setup, discovery, analysis, and even some live exploits on old vulnerabilities! By better understanding the risks, we can better protect digitally those who protect our health and well being.
+
 
 Speaker Bio(s) (not to exceed 1337 characters total):
 
-Conor is a computer scientist with a system administrator background who has spent the past decade securing systems in a myriad of industries. His strongest skills are focused around Application Security and Reverse Engineering. Helping development teams through finding and remediating issues all across the stack by bashing, breaking, fuzzing, injecting and reversing everything from obfuscated binaries to massive applications hosting a globally distributed userbase.
+
+Conor is a computer scientist with a system administrator background who has spent the past decade securing systems in a myriad of industries. His focus has been around Application Security and Reverse Engineering, helping development teams by finding and remediating issues all across the stack through bashing, breaking, fuzzing, injecting, reversing or any other kind of cyber you're looking for.
+
 
 DETAILED OUTLINE:
+
 
 Outline
 1. Introduction
@@ -134,13 +192,15 @@ Outline
       2. Healthcare is an industry rife with security issues, regulations, and historically poorly funded security programs. [3]
       3. Saving people is considered a good thing… [2]
    1. Thesis: We understand that medical device security is an issue to solve. How do we hack our way out of this problem?
-We first need to better understand the environment that causes it. So we've started building ourselves a medical device testing lab, and are presenting our findings so far.
+We first need to better understand the environment that causes it. So we've started building a medical device testing lab, and are presenting our findings to date.
+
+
 
 
 1. Background Research
    1. Security researchers have discovered severe vulnerabilities before [4],[5]
    2. Healthcare is presented with a very hard problem of securing these vulnerable devices
-      1. Healthcare historically attributes little resources to IT, Network security being a fraction of that
+      1. Healthcare historically attributes little resources to IT, network security being a fraction of that.
          1. This leads to a dearth in capable IT staff as well as not operating with updated technologies.
       1. Medical devices are chosen by physicians, sometimes leaving IT out of the discovery, purchase, and on-boarding processes until network access is needed.
       2. Similar problems with critical embedded devices have proposed solutions, but the implementation is hard [6]
@@ -148,8 +208,8 @@ We first need to better understand the environment that causes it. So we've star
    1. Lodestone formed research partnerships with healthcare orgs to identify real-world, achievable solutions that work.
       1. Data was collected by conducting interviews, volunteered by partners, or through experience from on-site engagements with permitting clients. [7]
       2. Solutions range from network segmentation, threat detection, all the way through to  actually disassembling the devices themselves to manually install basic Windows updates. [8]
-   1. PROBLEM: Hospitals buy medical device to service their patients. Not all of them have spares lying around not being used. Who wants to let a bunch of hackers hammer away on their livelihood?
-   2. So we had to find some vulnerably medical devices of our own...
+   1. PROBLEM: Hospitals buy medical devices to service their patients. Not all of them have spares lying around not being used. We can't expect our clients to let us run haywire on their livelihood.
+   2. So we had to find some vulnerable medical devices of our own...
 1. Acquiring Medical Devices
    1. FDA Regulations
       1. "Under the provision of Section 520(e) of the Amendments, the FDA is authorized to restrict the sale, distribution, or use of a device if there cannot otherwise be reasonable assurance of its safety and effectiveness. A restricted device can only be sold on oral or written authorization by a licensed practitioner or under conditions specified by regulation." [9]
@@ -159,15 +219,17 @@ We first need to better understand the environment that causes it. So we've star
    1. Vendor Relationships
       1. Vendors, as well as licensed third-parties often will also handle the sale and maintenance of the products.
       2. These companies are trying to sell their newest products, to the biggest healthcare orgs. Enough background checks, and they start asking fishy questions like “Why do you want to test our devices?”
-   1. Ebay
+   1. Device Acquisition
       1. So we turned to where everyone has gone since Al Gore invented the internet, Ebay!
       2. Ebay has a number of users selling different types of medical equipment. The products are advertised in Ebay fashion with bright color, large text, and fancy photos. If you look hard enough, you see that they do request you be an FDA authorized purchaser. [10]
       3. That being said, we still have yet to have any information requested during purchase, outside of payment and shipping info.
 
 
+
+
 1. Hospira Plum A+ IV Pump
    1. Why did we pick this device?
-      1. Hospira, now Pfizer Injectables, is a manufacturer of popular, cheap IV pumps, found all over clinics, and ebay.
+      1. Hospira, now Pfizer Injectables, is a manufacturer of popular, cheap IV pumps, found all over hispitals, clinics, TV, movies, and ebay.
       2. The pumps have been in the news before for security vulnerabilities[11]
    1. Plum A+ Initial Findings [12]
       1. Online forums revealing “cheat codes” for enabling “Biomed modes” on device
@@ -178,7 +240,9 @@ We first need to better understand the environment that causes it. So we've star
          2. 8443 requests basic authentication credentials request.
             1. Shuts down NIC after three incorrect auth’s in ~60 seconds, for ~120 seconds
          1. Key is supposedly static to firmware, and non-updateable[11]
-         2. Reports to be a TinyHTTPD Server, and running thttpd-2.25, a version dated 2003, 16 years old!
+         2. Reports to be a TinyHTTPD Server, and running thttpd-2.25, a version dated 2003, 17 years old!
+
+
 
 
 1. Philips Intellivue MP50 Patient Monitor
@@ -192,8 +256,7 @@ We first need to better understand the environment that causes it. So we've star
 1. Data Export Programming Guide
    1. Finding the Guide
       1. Searching for a program to speak “philips mp50 patient monitor on udp 24005”, I came upon the Philips Data Export Programming Guide [16]
-      2. Instead of finding some program to eavesdrop on, and bastardize the replayed traffic, I found a “Rosetta Stone” analog.
-   1. Protocol Analysis
+  1. Protocol Analysis
       1. The device sends a regular broadcast, which instructs clients which port to interact with.
       2. The client sends an Association Request, the monitor sends an Association Response, then sends an MDS Request, expecting a response from the client to determine the session configuration.
       3. The client is then expected to request data from the monitor at regular intervals
@@ -203,33 +266,27 @@ We first need to better understand the environment that causes it. So we've star
    1. Hacking a Client Together
       1. First couple attempts to copy-paste resulted in errors, so built a script to parse error data
       2. The errors didn’t tell me what I needed to fix, so then I parsed the broadcast message.
-      3. Little by little, realized I had to mash all my parts together, and built a rough python client
-      4. Shoves raw bytes down a socket, and only handles the desired responses. [18]
+      3. Little by little, realized I had to mash all my parts together, and built a rough python client. [18]
       5. Once you send the right packets, it sends you patient data! [19]
-      6. Additionally, the manual states only a computer on the devices subnet will be able to access the DEP interface. Further testing proved the interface accessible, although the computer no longer receives the broadcast
+      6. Additionally, the manual states only a computer on the devices subnet will be able to access the DEP interface. Further testing proved the interface accessible, although the computer no longer receives the broadcast since not on the subnet.
    1. Einstein Project
-      1. When I circled back to document my findings for my DEFCON submission, I had my ego balloon burst when I stumbled upon the Github repo for a project called Einstein, a Python2.7 client which “...provides a communication interface for Philips IntelliVue Patient Monitors.” [20]
-      2. Project is based on the DEP Programming Guide, and built using the Scapy library, which is designed for building and dissecting network protocols.
+      1. When I circled back to document my findings for my DEFCON submission, I stumbled upon the Github repo for a project called Einstein, a Python2.7 client which “...provides a communication interface for Philips IntelliVue Patient Monitors.” [20]
+      2. Project is based on the DEP Programming Guide, and built using the Scapy library.
       3. The client listens for the broadcast, automatically associates, and then begins polling for numerical data. Any “observed” data is then sent to a specified web server.
       4. The project did not have the ability to request or parse Patient Demographic data, so I added it and submitted a Pull Request. [21]
    1. Somno, Open Health Care, and the UK National Health Service
       1. So turns out the organization responsible for Einstein, Somno, was another medical device organization, spun off of a pitch at the NHS London Hack Day in 2016 [22]
       2. The project seems intended to integrate into another open source project called Opal, which claims to be a “Full Stack Web Framework For Building Health Care Applications". The project is run by Open Health Care, the organization who operates NHS Hack Day. [23]
       3. All of these organizations claim to be revolutionizing healthcare. This is a wonderful goal, but following tradition, there is very little mention of security anywhere.
-1. Presentation Project: Frankeinstein
+1. Presentation Project: Frank-Einstein
    1. Philips Data Export Protocol Nmap Script [24]
       1. This script is designed to fingerprint any open UDP port listening with the Data Export Protocol service. It uses a malformed packet, expecting a “Refuse” message from the service.
-   1. Patient Monitor Server [25]
-      1. This server is based on the Einstein project referenced earlier.
-      2. Targets are force loaded into the database from parsed nmap scripts
-      3. Script starts to associate with monitors immediately, and poll for patient data
-   1. Data collection server [26]
-      1. This is a simple Python SimpleHTTP server included with the project, which either saves the data to a SQL-Lite3 DB, or prints to STD_OUT.
+2. Modified Einstein client is run to pull desired data from discovered monitors in target range.
 
 
 1. Follow-Ups, Work in Progress
    1. On Going Research
-      1. At the time of writing, 2019/03/04, progress is still on-going with all mentioned efforts, as well as new additions
+      1. At the time of writing, progress is still on-going with all mentioned efforts, as well as new additions
    1. Hospira Plum A+
       1. We have begun physically disassembling the device. We will document any progress and findings.
       2. We hope to practice some embedded security testing, and extract the embedded OS from the device, in hopes of recovering the static key.
@@ -240,8 +297,8 @@ We first need to better understand the environment that causes it. So we've star
       1. There’s a list of devices that are on the horizon for our lab
       2. St. Jude Implantable Products + Merlin@Home [27]
          1. Monitor which interfaces with the implanted devices. Previously reported as vulnerable.
-         2. Just received monitor beginning of April.
-         3. Plans in place to analyze device, and potentially record the signals with an SDR.
+
+
       1. Medtronic Implanted Cardiac Devices
          1. We've purchased a Carelink monitor, which interfaces with the implanted devices.
          2. These devices were recently publicized for security vulnerabilities, including ones to drain the battery life of the ICD.
@@ -251,7 +308,13 @@ We first need to better understand the environment that causes it. So we've star
          3. Devices are big, bulky, and expensive. Might be able to purchase the separate embedded computer.
 
 
+
+
 Sources
+
+
+
+
 
 
 
@@ -289,58 +352,83 @@ Sources
 
 WHY DEF CON?:
 
-This is about hacking apart medical devices to understand the underlying inherent issues. We're getting into it not through corporate sponsorship, or vendor agreements, but by buying things we shouldn't be able to off the gray market, pulling them apart physically and logically to identify and take advantage of their weakenesses, all because if I can, so can they.
 
-I will attempt to re-purpose this content for other talks, Medical and InfoSec related, but this is my DEFCON talk, and none of my others will be like it.
+This is about hacking apart medical devices to understand the underlying inherent issues. We're getting into it not through corporate sponsorship, or vendor agreements, but by buying things we shouldn't be able to off the gray market, pulling them apart physically and logically to identify and take advantage of their weaknesses, all because if I can, so can they. I feel this approach is true to the original concept of what “hacking” really is.
+
+
+Now that’s why I want to present on this subject. But talking at DEFCON has been a life goal of mine since I got into security. I see it as the pinnacle and essence of hacking culture and expertise. I plan to submit one or more times to every upcoming DEFCON, just hope I can find something interesting enough to be worth listening to!
+
 
 SCHEDULING AND EQUIPMENT REQUIREMENTS
 Is there a specific day or time by which you must present?* Yes or No.
 If Yes, Please indicate the dates/times and restriction.
 
+
 No
+
 
 Will you require more than 1 projector feed? Yes or No. If yes, please specify how many and why.
 
+
 No
+
 
 Are there any other special equipment needs that you will require to successfully present your talk?
 
-The patient monitor, which I will supply
+
+If I brought the devices on stage they would need power, and a network connection, but I could bring a switch
+
 
 SUPPORTING FILES:
 https://www.gitlab.com/lodestone-security/frankeinstein
+https://gitlab.com/lodestone-security/gray-market-lab-preso
+
 
 SUBMISSION AGREEMENTS
 Please read and accept these terms by inserting your name where noted. Failure to do so will render your submission incomplete. Please read these carefully as some of the terms have changed.
 
+
 Grant of Copyright Use
 I warrant that the above work has not been previously published elsewhere, or if it has, that I have obtained permission for its publication by DEF CON Communications, Inc. and that I will promptly supply DEF CON Communications, Inc. with wording for crediting the original publication and copyright owner. If I am selected for presentation, I hereby give DEF CON Communications, Inc. permission to duplicate, record and redistribute this presentation, which includes, but is not limited to, the conference proceedings, conference CD, video, audio, and hand-outs to the conference attendees for educational, on-line, and all other purposes.
 
+
 Terms of Speaking Requirements
-1) I will submit a completed presentation, a copy of the tool(s) and/or code(s), and a reference to all of the tool(s), law(s), Web sites and/or publications referenced to at the end of my talk and as described in this CFP submission for publication on the DEF CON media server, to be released the day of the conference, by 12:00 noon Pacific time, July 15, 2019.
+1) I will submit a completed presentation, a copy of the tool(s) and/or code(s), and a reference to all of the tool(s), law(s), Web sites and/or publications referenced to at the end of my talk and as described in this CFP submission for publication on the DEF CON media server, to be released the day of the conference, by 12:00 noon Pacific time, July 15, 2020.
 
-2) I will submit a final Abstract and Biography for the DEF CON website and Printed Conference Materials by 12:00 noon Pacific time, June 15, 2019.
 
-3) I understand if I fail to submit a completed PDF presentation by July 15, 2019, I may be replaced by an alternate presentation or may forfeit my honorarium. This decision will be made by DEF CON and I will be informed in writing of my status.
+2) I will submit a final Abstract and Biography for the DEF CON website and Printed Conference Materials by 12:00 noon Pacific time, June 15, 2020.
+
+
+3) I understand if I fail to submit a completed PDF presentation by July 15, 2020, I may be replaced by an alternate presentation or may forfeit my honorarium. This decision will be made by DEF CON and I will be informed in writing of my status.
+
 
 4) I will include a detailed bibliography as either a separate document or included within the presentation of all resources cited and/or used in my presentation.
 
+
 5) I will complete my presentation within the time allocated to me - not running over, or excessively under the time allocation.
+
 
 6) I understand that DEF CON will provide 1 projector feed, 2 screens, microphones, wired and/or wireless Internet. I understand that I am responsible for providing all other necessary equipment, including laptops and machines (with VGA output), to complete my presentation.
 
+
 7) If applicable, I will submit within 5 days of the completion of the conference any updated, revised or additional presentation(s) or materials that were used in my presentation but not included on the conference media server or conference proceedings.
 
+
 Terms of Speaking Remuneration
-1) I understand that I will be responsible for my own hotel and travel expenses.
+1). DEF CON will provide 3 nights hotel per accepted presentation for the primary speaker only. The hotel will be at the DEF CON Venue properties, and of DEF CON’s choosing. I understand I will need to confirm my hotel nights and submit my preferences by the date listed in my official acceptance letter. I understand that I will be responsible for my own travel expenses, unless prior approval is made with special exception.
+
 
 2) I understand that DEF CON will issue one $300 payment per presentation to the primary speaker only. Payment will be made in the form of company check. I may choose to waive my $300 honorarium in exchange for 3 DEF CON Human badges, received at the start of the conference. I may also choose to donate my honorarium to charity.
 
+
 3) I understand that I may receive payment on-site at the conference. If selecting the $300 payment as my honorarium, I must provide a valid name and postal mail address so that the payment may be mailed. In some rare cases, I may be required to complete a W8 (Non-U.S. Citizen) or W9 (U.S. Citizen) before payment is issued.
+
 
 4) I understand that I will be paid within 30 days from the end of the conference, after I have completed my presentation. I understand that should my talk be determined to be unsuitable (e.g. a vendor or sales pitch, a talk on the keeping of goats, etc.) after I have presented, that I will not receive an honorarium.
 
+
 As detailed above, I, Conor, have read and agree to the Grant of Copyright Use. I, Conor, have read and agree to the Terms of Speaking Requirements. I, Conor, have read and agree to the Agreement to Terms of Speaking Remuneration or I will forfeit my honorarium.
+
 
 PRESS CONTACT
 I, Conor understand that DEF CON's official Press Liaison & Staff may contact me. I consent to be contacted in order to arrange interviews with the media. My contact information will not be given to third parties without my consent.
