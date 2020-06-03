@@ -1,0 +1,17 @@
+10-pin connector fits AVR ByteBlaster JTAG pinout
+http://www.jtagtest.com/pinouts/altera_byteblaster
+
+Pin#	Rgnd	Rvcc	V	Notes
+1		1k		11k		0	TCK
+2		0		10k		0	Gnd
+3		inf.	inf.	1	TDO
+4		10k		0		3.3	VREF
+5		11k 	1k 		3.3	TMS
+6		inf		inf		0	n/c
+7		inf		inf		0	n/c
+8		inf		inf		0	n/c
+9		11k		1k 		3.3	TDI
+10		0		14k		0	Gnd
+
+Connected JTAGulator, no devices identified.
+Maybe a missing or broken connection somewhere from dissasembly. New device ordered 6/2
